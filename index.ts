@@ -86,3 +86,13 @@ export async function asyncToSetOnce<T>(iterator: AsyncIteratorLike<T>): Promise
     }
     return set;
 }
+
+export async function asyncFirstOnce<T>(iterator: AsyncIteratorLike<T>): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    const element = await it.next();
+    if (element.done === true) {
+        return null;
+    } else {
+        return element.value;
+    }
+}
