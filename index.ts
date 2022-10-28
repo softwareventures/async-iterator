@@ -75,3 +75,14 @@ export async function asyncToArrayOnce<T>(iterator: AsyncIteratorLike<T>): Promi
     }
     return array;
 }
+
+export async function asyncToSetOnce<T>(iterator: AsyncIteratorLike<T>): Promise<Set<T>> {
+    const it = asyncIterator(iterator);
+    const set = new Set<T>();
+    let element = await it.next();
+    while (element.done !== true) {
+        set.add(element.value);
+        element = await it.next();
+    }
+    return set;
+}
