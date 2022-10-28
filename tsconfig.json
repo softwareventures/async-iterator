@@ -1,6 +1,7 @@
 {
   "extends": "@softwareventures/tsconfig/commonjs",
   "compilerOptions": {
+    "lib": ["ES2017", "ES2018.AsyncGenerator", "ES2018.AsyncIterable"],
     "types": []
   },
   "exclude": ["**/*.test.ts", "**/test.ts"]

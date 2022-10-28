@@ -834,6 +834,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@softwareventures/async-iterable@npm:^1.0.1":
+  version: 1.1.1
+  resolution: "@softwareventures/async-iterable@npm:1.1.1"
+  dependencies:
+    "@softwareventures/nullable": ^2.0.0 || ^3.0.0
+    "@softwareventures/ordered": ^1.1.0 || ^2.0.0
+    tslib: 2.4.0
+  checksum: 3a83010dde28dd3de9ef381d777ca5b1812fbf306735300976cc1c01842611ce70dffa6b337a2bcdca2ce9d272d28bbce308b75aa8e4034249ca760546b86dec
+  languageName: node
+  linkType: hard
+
 "@softwareventures/async-iterator@workspace:.":
   version: 0.0.0-use.local
   resolution: "@softwareventures/async-iterator@workspace:."
@@ -841,6 +852,7 @@ __metadata:
     "@commitlint/cli": 17.1.2
     "@commitlint/config-conventional": 17.1.0
     "@commitlint/cz-commitlint": 17.1.2
+    "@softwareventures/async-iterable": ^1.0.1
     "@softwareventures/eslint-config": 7.0.0
     "@softwareventures/precise-commits": 2.0.22
     "@softwareventures/prettier-config": 3.0.0
@@ -896,12 +908,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@softwareventures/nullable@npm:^2.0.0 || ^3.0.0":
+  version: 3.0.0
+  resolution: "@softwareventures/nullable@npm:3.0.0"
+  dependencies:
+    tslib: 2.4.0
+  checksum: 19775dce03995984daef0a8c6b81b4e9f8f9ab770d6b09d815968b9ac2be368a2f144aa68201b002652880ce3587de3a8267f457882682abe8e34629745f2df8
+  languageName: node
+  linkType: hard
+
 "@softwareventures/ordered@npm:^0.2.0 || ^1.0.0":
   version: 1.1.0
   resolution: "@softwareventures/ordered@npm:1.1.0"
   dependencies:
     tslib: ^1.9.3 || ^2.0.0 || ^2.1.0
   checksum: a68d969b9992125f338153f0070beeb60d25e3e91735f8229da900f9a5f20fc07ef7387476b87acb95f955172826006f1154d39fa5c9974089a6edba7b6e29bd
+  languageName: node
+  linkType: hard
+
+"@softwareventures/ordered@npm:^1.1.0 || ^2.0.0":
+  version: 2.0.0
+  resolution: "@softwareventures/ordered@npm:2.0.0"
+  dependencies:
+    tslib: ^1.9.3 || ^2.0.0 || ^2.1.0
+  checksum: b6f87b980eaaf498efce7642a17e13ba52c5c36fabc42fdca14d2d64dcda1a1424c4c67b4263bf51eab0654c6eae6782f2d4427c51eda4e7431214625e0c9fef
   languageName: node
   linkType: hard
 

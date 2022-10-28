@@ -22,6 +22,7 @@
     "node": "^14 || ^16 || ^18 || >=19"
   },
   "dependencies": {
+    "@softwareventures/async-iterable": "^1.0.1",
     "tslib": "2.4.0"
   },
   "devDependencies": {
