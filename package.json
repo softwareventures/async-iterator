@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "@softwareventures/async-iterable": "^1.0.1",
-    "tslib": "2.4.0"
+    "tslib": "2.4.0",
+    "unknown": "^0.2.5"
   },
   "devDependencies": {
     "@commitlint/cli": "17.1.2",
