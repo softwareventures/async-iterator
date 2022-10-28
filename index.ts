@@ -102,3 +102,26 @@ export function asyncTailOnce<T>(iterator: AsyncIteratorLike<T>): AsyncIterator<
     const tail = it.next().then(() => it);
     return fromPromiseOfIteratorLike(tail);
 }
+
+export function asyncPushOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    value: T | Promise<T>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let next = async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        if (element.done === true) {
+            next = async () => Promise.resolve({done: true, value: undefined});
+            return {value: await value};
+        } else {
+            return element;
+        }
+    };
+    return {next: async () => next()};
+}
+
+export function asyncPushOnceFn<T>(
+    value: T | Promise<T>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncPushOnce(iterator, value);
+}
