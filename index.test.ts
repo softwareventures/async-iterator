@@ -1,6 +1,12 @@
 import type {ExecutionContext} from "ava";
 import test from "ava";
-import {asyncIterator, asyncPushOnce, asyncTailOnce, asyncToArrayOnce} from "./index";
+import {
+    asyncIterator,
+    asyncPushOnce,
+    asyncTailOnce,
+    asyncToArrayOnce,
+    asyncUnshiftOnce
+} from "./index";
 
 test("asyncIterator(empty)", async t => {
     t.true((await asyncIterator([]).next()).done);
@@ -97,4 +103,12 @@ test("asyncTailOnce", async t => {
 test("asyncPushOnce", async t => {
     t.deepEqual(await asyncToArrayOnce(asyncPushOnce(asyncIterator([1, 2, 3]), 4)), [1, 2, 3, 4]);
     t.deepEqual(await asyncToArrayOnce(asyncPushOnce(asyncIterator([]), 4)), [4]);
+});
+
+test("asyncUnshiftOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(asyncUnshiftOnce(asyncIterator([1, 2, 3]), 4)),
+        [4, 1, 2, 3]
+    );
+    t.deepEqual(await asyncToArrayOnce(asyncUnshiftOnce(asyncIterator([]), 4)), [4]);
 });

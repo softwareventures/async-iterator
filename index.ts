@@ -125,3 +125,21 @@ export function asyncPushOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncPushOnce(iterator, value);
 }
+
+export function asyncUnshiftOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    value: T | Promise<T>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let next = async (): Promise<IteratorResult<T>> => {
+        next = async () => it.next();
+        return {value: await value};
+    };
+    return {next: async () => next()};
+}
+
+export function asyncUnshiftOnceFn<T>(
+    value: T | Promise<T>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncUnshiftOnce(iterator, value);
+}
