@@ -1,6 +1,6 @@
 import type {ExecutionContext} from "ava";
 import test from "ava";
-import {asyncIterator} from "./index";
+import {asyncIterator, asyncTailOnce, asyncToArrayOnce} from "./index";
 
 test("asyncIterator(empty)", async t => {
     t.true((await asyncIterator([]).next()).done);
@@ -86,4 +86,10 @@ test("asyncIterator(Promise<Iterable<T>>", async t => {
 
 test("asyncIterator(Promise<Iterable<Promise<T>>>)", async t => {
     await verify123(t, asyncIterator(Promise.resolve(promiseGenerator123())));
+});
+
+test("asyncTailOnce", async t => {
+    t.deepEqual(await asyncToArrayOnce(asyncTailOnce(asyncIterator([1, 2, 3, 4]))), [2, 3, 4]);
+    t.deepEqual(await asyncToArrayOnce(asyncTailOnce(asyncIterator([1]))), []);
+    t.deepEqual(await asyncToArrayOnce(asyncTailOnce(asyncIterator([]))), []);
 });

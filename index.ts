@@ -96,3 +96,9 @@ export async function asyncFirstOnce<T>(iterator: AsyncIteratorLike<T>): Promise
         return element.value;
     }
 }
+
+export function asyncTailOnce<T>(iterator: AsyncIteratorLike<T>): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    const tail = it.next().then(() => it);
+    return fromPromiseOfIteratorLike(tail);
+}
