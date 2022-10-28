@@ -64,3 +64,14 @@ function fromPromiseOfIteratorLike<T>(iterator: PromiseOfAsyncIteratorLike<T>): 
     };
     return {next: async () => next()};
 }
+
+export async function asyncToArrayOnce<T>(iterator: AsyncIteratorLike<T>): Promise<T[]> {
+    const it = asyncIterator(iterator);
+    const array: T[] = [];
+    let element = await it.next();
+    while (element.done !== true) {
+        array.push(element.value);
+        element = await it.next();
+    }
+    return array;
+}
