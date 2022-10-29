@@ -143,3 +143,18 @@ export function asyncUnshiftOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncUnshiftOnce(iterator, value);
 }
+
+export function asyncInitialOnce<T>(iterator: AsyncIteratorLike<T>): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let prev = it.next();
+    return {
+        next: async () => {
+            const [element, result] = await prev.then(async () => {
+                const result = prev;
+                prev = it.next();
+                return [await prev, await result] as const;
+            });
+            return element.done === true ? element : result;
+        }
+    };
+}
