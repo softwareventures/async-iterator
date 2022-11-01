@@ -4,6 +4,7 @@ import {
     asyncInitialOnce,
     asyncIterator,
     asyncLastOnce,
+    asyncOnlyOnce,
     asyncPushOnce,
     asyncTailOnce,
     asyncToArrayOnce,
@@ -124,4 +125,10 @@ test("asyncInitialOnce", async t => {
 test("asyncLastOnce", async t => {
     t.is(await asyncLastOnce(asyncIterator([])), null);
     t.is(await asyncLastOnce(asyncIterator([1, 2, 3])), 3);
+});
+
+test("asyncOnlyOnce", async t => {
+    t.is(await asyncOnlyOnce(asyncIterator([])), null);
+    t.is(await asyncOnlyOnce(asyncIterator([4])), 4);
+    t.is(await asyncOnlyOnce(asyncIterator([3, 4, 5])), null);
 });

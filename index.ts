@@ -172,3 +172,17 @@ export async function asyncLastOnce<T>(iterator: AsyncIteratorLike<T>): Promise<
     }
     return last.value;
 }
+
+export async function asyncOnlyOnce<T>(iterator: AsyncIteratorLike<T>): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    const first = await it.next();
+    if (first.done === true) {
+        return null;
+    }
+    const second = await it.next();
+    if (second.done === true) {
+        return first.value;
+    } else {
+        return null;
+    }
+}
