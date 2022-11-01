@@ -158,3 +158,17 @@ export function asyncInitialOnce<T>(iterator: AsyncIteratorLike<T>): AsyncIterat
         }
     };
 }
+
+export async function asyncLastOnce<T>(iterator: AsyncIteratorLike<T>): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    let last = await it.next();
+    if (last.done === true) {
+        return null;
+    }
+    let element = await it.next();
+    while (element.done !== true) {
+        last = element;
+        element = await it.next();
+    }
+    return last.value;
+}

@@ -3,6 +3,7 @@ import test from "ava";
 import {
     asyncInitialOnce,
     asyncIterator,
+    asyncLastOnce,
     asyncPushOnce,
     asyncTailOnce,
     asyncToArrayOnce,
@@ -118,4 +119,9 @@ test("asyncInitialOnce", async t => {
     t.deepEqual(await asyncToArrayOnce(asyncInitialOnce(asyncIterator([1, 2, 3, 4]))), [1, 2, 3]);
     t.deepEqual(await asyncToArrayOnce(asyncInitialOnce(asyncIterator([1]))), []);
     t.deepEqual(await asyncToArrayOnce(asyncInitialOnce(asyncIterator([]))), []);
+});
+
+test("asyncLastOnce", async t => {
+    t.is(await asyncLastOnce(asyncIterator([])), null);
+    t.is(await asyncLastOnce(asyncIterator([1, 2, 3])), 3);
 });
