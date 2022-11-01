@@ -275,3 +275,30 @@ export function asyncTakeOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncTakeOnce(iterator, count);
 }
+
+export function asyncDropOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    count: number | Promise<number>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const before = async (): Promise<IteratorResult<T>> => {
+        let element = await it.next();
+        const c = await count;
+        while (i++ < c && element.done !== true) {
+            element = await it.next();
+        }
+
+        next = during;
+        return element;
+    };
+    const during = async (): Promise<IteratorResult<T>> => it.next();
+    let next = before;
+    return {next: async () => next()};
+}
+
+export function asyncDropOnceFn<T>(
+    count: number | Promise<number>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncDropOnce(iterator, count);
+}
