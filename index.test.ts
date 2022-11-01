@@ -8,6 +8,7 @@ import {
     asyncNotEmptyOnce,
     asyncOnlyOnce,
     asyncPushOnce,
+    asyncSliceOnce,
     asyncTailOnce,
     asyncToArrayOnce,
     asyncUnshiftOnce
@@ -145,4 +146,17 @@ test("asyncNotEmptyOnce", async t => {
     t.is(await asyncNotEmptyOnce(asyncIterator([])), false);
     t.is(await asyncNotEmptyOnce(asyncIterator([1])), true);
     t.is(await asyncNotEmptyOnce(asyncIterator([1, 2, 3])), true);
+});
+
+test("asyncSliceOnce", async t => {
+    t.deepEqual(await asyncToArrayOnce(asyncSliceOnce(asyncIterator([1, 2, 3, 4]), 1)), [2, 3, 4]);
+    t.deepEqual(
+        await asyncToArrayOnce(asyncSliceOnce(asyncIterator([1, 2, 3, 4, 5]), 1, 4)),
+        [2, 3, 4]
+    );
+    t.deepEqual(await asyncToArrayOnce(asyncSliceOnce(asyncIterator([1, 2, 3]), 2)), [3]);
+    t.deepEqual(await asyncToArrayOnce(asyncSliceOnce(asyncIterator([1, 2, 3]), 0, 2)), [1, 2]);
+    t.deepEqual(await asyncToArrayOnce(asyncSliceOnce(asyncIterator([]), 3, 5)), []);
+    t.deepEqual(await asyncToArrayOnce(asyncSliceOnce(asyncIterator([1, 2, 3]), 2, 0)), []);
+    t.deepEqual(await asyncToArrayOnce(asyncSliceOnce(asyncIterator([1, 2, 3]), 1, 1)), []);
 });

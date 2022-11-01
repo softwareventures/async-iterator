@@ -194,3 +194,56 @@ export async function asyncEmptyOnce<T>(iterator: AsyncIteratorLike<T>): Promise
 export async function asyncNotEmptyOnce<T>(iterator: AsyncIteratorLike<T>): Promise<boolean> {
     return (await asyncIterator(iterator).next()).done !== true;
 }
+
+export function asyncSliceOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    start: number | Promise<number> = 0,
+    end: number | Promise<number> = Infinity
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const done: IteratorResult<T> = {done: true, value: undefined};
+    const first = async (): Promise<IteratorResult<T>> => {
+        if ((await end) <= (await start)) {
+            next = after;
+            return done;
+        } else {
+            next = before;
+            return before();
+        }
+    };
+    const before = async (): Promise<IteratorResult<T>> => {
+        let element = await it.next();
+        const s = await start;
+        while (i++ < s && element.done !== true) {
+            element = await it.next();
+        }
+
+        if (element.done === true) {
+            next = after;
+            return done;
+        } else {
+            next = during;
+            return element;
+        }
+    };
+    const during = async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        if (i++ < (await end) && element.done !== true) {
+            return element;
+        } else {
+            next = after;
+            return done;
+        }
+    };
+    const after = async (): Promise<IteratorResult<T>> => done;
+    let next = first;
+    return {next: async () => next()};
+}
+
+export function asyncSliceOnceFn<T>(
+    start: number | Promise<number>,
+    end: number | Promise<number> = Infinity
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncSliceOnce(iterator, start, end);
+}
