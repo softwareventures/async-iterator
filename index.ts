@@ -186,3 +186,7 @@ export async function asyncOnlyOnce<T>(iterator: AsyncIteratorLike<T>): Promise<
         return null;
     }
 }
+
+export async function asyncEmptyOnce<T>(iterator: AsyncIteratorLike<T>): Promise<boolean> {
+    return (await asyncIterator(iterator).next()).done === true;
+}

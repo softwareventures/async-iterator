@@ -1,6 +1,7 @@
 import type {ExecutionContext} from "ava";
 import test from "ava";
 import {
+    asyncEmptyOnce,
     asyncInitialOnce,
     asyncIterator,
     asyncLastOnce,
@@ -131,4 +132,10 @@ test("asyncOnlyOnce", async t => {
     t.is(await asyncOnlyOnce(asyncIterator([])), null);
     t.is(await asyncOnlyOnce(asyncIterator([4])), 4);
     t.is(await asyncOnlyOnce(asyncIterator([3, 4, 5])), null);
+});
+
+test("asyncEmptyOnce", async t => {
+    t.is(await asyncEmptyOnce(asyncIterator([])), true);
+    t.is(await asyncEmptyOnce(asyncIterator([1])), false);
+    t.is(await asyncEmptyOnce(asyncIterator([1, 2, 3])), false);
 });
