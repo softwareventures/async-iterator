@@ -5,6 +5,7 @@ import {
     asyncInitialOnce,
     asyncIterator,
     asyncLastOnce,
+    asyncNotEmptyOnce,
     asyncOnlyOnce,
     asyncPushOnce,
     asyncTailOnce,
@@ -138,4 +139,10 @@ test("asyncEmptyOnce", async t => {
     t.is(await asyncEmptyOnce(asyncIterator([])), true);
     t.is(await asyncEmptyOnce(asyncIterator([1])), false);
     t.is(await asyncEmptyOnce(asyncIterator([1, 2, 3])), false);
+});
+
+test("asyncNotEmptyOnce", async t => {
+    t.is(await asyncNotEmptyOnce(asyncIterator([])), false);
+    t.is(await asyncNotEmptyOnce(asyncIterator([1])), true);
+    t.is(await asyncNotEmptyOnce(asyncIterator([1, 2, 3])), true);
 });
