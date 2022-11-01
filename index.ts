@@ -247,3 +247,31 @@ export function asyncSliceOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncSliceOnce(iterator, start, end);
 }
+
+export function asyncTakeOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    count: number | Promise<number>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const done: IteratorResult<T> = {done: true, value: undefined};
+    const during = async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        const c = await count;
+        if (i++ < c && element.done !== true) {
+            return element;
+        } else {
+            next = after;
+            return done;
+        }
+    };
+    const after = async (): Promise<IteratorResult<T>> => done;
+    let next = during;
+    return {next: async () => next()};
+}
+
+export function asyncTakeOnceFn<T>(
+    count: number | Promise<number>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncTakeOnce(iterator, count);
+}
