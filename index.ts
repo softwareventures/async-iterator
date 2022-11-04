@@ -624,3 +624,27 @@ export function asyncRemoveFirstOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncRemoveFirstOnce(iterator, value);
 }
+
+export async function asyncFoldOnce<T, U>(
+    iterator: AsyncIteratorLike<T>,
+    f: (accumulator: U, element: T, index: number) => U | Promise<U>,
+    initial: U | Promise<U>
+): Promise<U> {
+    const it = asyncIterator(iterator);
+    let [element, accumulator] = await Promise.all([it.next(), initial] as const);
+    let i = 0;
+    while (element.done !== true) {
+        [accumulator, element] = await Promise.all([
+            f(accumulator, element.value, i++),
+            it.next()
+        ] as const);
+    }
+    return accumulator;
+}
+
+export function asyncFoldOnceFn<T, U>(
+    f: (accumulator: U, element: T, index: number) => U | Promise<U>,
+    initial: U | Promise<U>
+): (iterator: AsyncIteratorLike<T>) => Promise<U> {
+    return async iterator => asyncFoldOnce(iterator, f, initial);
+}

@@ -10,6 +10,7 @@ import {
     asyncExcludeNullOnce,
     asyncExcludeOnce,
     asyncFilterOnce,
+    asyncFoldOnce,
     asyncInitialOnce,
     asyncIterator,
     asyncLastOnce,
@@ -404,4 +405,8 @@ test("asyncRemoveFirstOnce", async t => {
         await asyncToArrayOnce(asyncRemoveFirstOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 3)),
         [1, 2, 4, 3, 2, 1]
     );
+});
+
+test("asyncFoldOnce", async t => {
+    t.is(await asyncFoldOnce(asyncIterator([1, 2, 3]), (a, e, i) => a + e * i, 0), 8);
 });
