@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@softwareventures/async-iterable": "^1.0.1",
+    "@softwareventures/nullable": "^3.0.0",
     "@softwareventures/ordered": "^2.0.0",
     "tslib": "2.4.0",
     "unknown": "^0.2.5"

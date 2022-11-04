@@ -2,6 +2,7 @@ import {equal as defaultEqual} from "@softwareventures/ordered";
 import type {AsyncIterableLike} from "@softwareventures/async-iterable";
 import {hasProperty} from "unknown";
 import {asyncIterable} from "@softwareventures/async-iterable";
+import {isNotNull} from "@softwareventures/nullable";
 
 export type AsyncIteratorLike<T> =
     | AsyncIterator<T>
@@ -565,4 +566,10 @@ export function asyncExcludeOnceFn<T>(
     predicate: (element: T, index: number) => boolean | Promise<boolean>
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncExcludeOnce(iterator, predicate);
+}
+
+export function asyncExcludeNullOnce<T>(
+    iterator: AsyncIteratorLike<T | null | undefined>
+): AsyncIterator<T> {
+    return asyncFilterOnce(iterator, isNotNull);
 }

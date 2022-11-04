@@ -854,6 +854,7 @@ __metadata:
     "@commitlint/cz-commitlint": 17.1.2
     "@softwareventures/async-iterable": ^1.0.1
     "@softwareventures/eslint-config": 7.0.0
+    "@softwareventures/nullable": ^3.0.0
     "@softwareventures/ordered": ^2.0.0
     "@softwareventures/precise-commits": 2.0.22
     "@softwareventures/prettier-config": 3.0.0
@@ -910,7 +911,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@softwareventures/nullable@npm:^2.0.0 || ^3.0.0":
+"@softwareventures/nullable@npm:^2.0.0 || ^3.0.0, @softwareventures/nullable@npm:^3.0.0":
   version: 3.0.0
   resolution: "@softwareventures/nullable@npm:3.0.0"
   dependencies:

@@ -6,6 +6,7 @@ import {
     asyncDropWhileOnce,
     asyncEmptyOnce,
     asyncEqualOnce,
+    asyncExcludeNullOnce,
     asyncExcludeOnce,
     asyncFilterOnce,
     asyncInitialOnce,
@@ -370,4 +371,11 @@ test("asyncExcludeOnce", async t => {
         await asyncToArrayOnce(asyncExcludeOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), n => n < 3)),
         [3, 4, 3]
     );
+});
+
+test("asyncExcludeNullOnce", async t => {
+    t.deepEqual(await asyncToArrayOnce(asyncExcludeNullOnce(asyncIterator(["a", null, "b"]))), [
+        "a",
+        "b"
+    ]);
 });
