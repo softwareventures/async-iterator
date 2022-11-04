@@ -12,6 +12,7 @@ import {
     asyncFilterOnce,
     asyncFold1Once,
     asyncFoldOnce,
+    asyncIndexOnce,
     asyncInitialOnce,
     asyncIterator,
     asyncLastOnce,
@@ -414,4 +415,9 @@ test("asyncFoldOnce", async t => {
 
 test("asyncFold1Once", async t => {
     t.is(await asyncFold1Once(asyncIterator([1, 2, 3]), (a, e, i) => a + e * i), 9);
+});
+
+test("asyncIndexOnce", async t => {
+    t.is(await asyncIndexOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 2), 3);
+    t.is(await asyncIndexOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 7), null);
 });

@@ -1,7 +1,7 @@
 import {equal as defaultEqual} from "@softwareventures/ordered";
 import type {AsyncIterableLike} from "@softwareventures/async-iterable";
-import {hasProperty} from "unknown";
 import {asyncIterable} from "@softwareventures/async-iterable";
+import {hasProperty} from "unknown";
 import {isNotNull} from "@softwareventures/nullable";
 
 export type AsyncIteratorLike<T> =
@@ -671,4 +671,33 @@ export function asyncFold1OnceFn<T>(
     f: (accumulator: T, element: T, index: number) => T | Promise<T>
 ): (iterator: AsyncIteratorLike<T>) => Promise<T> {
     return async iterator => asyncFold1Once(iterator, f);
+}
+
+export async function asyncIndexOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    index: number | Promise<number>
+): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    const [i, e] = await Promise.all([index, it.next()] as const);
+
+    if (i < 0 || !isFinite(i) || Math.floor(i) !== i) {
+        throw new RangeError("illegal index");
+    }
+
+    let element = e;
+    for (let j = 0; element.done !== true && j < i; ++j) {
+        element = await it.next();
+    }
+
+    if (element.done === true) {
+        return null;
+    } else {
+        return element.value;
+    }
+}
+
+export function asyncIndexOnceFn<T>(
+    index: number | Promise<number>
+): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
+    return async iterator => asyncIndexOnce(iterator, index);
 }
