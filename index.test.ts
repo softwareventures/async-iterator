@@ -10,6 +10,7 @@ import {
     asyncIterator,
     asyncLastOnce,
     asyncNotEmptyOnce,
+    asyncNotEqualOnce,
     asyncOnlyOnce,
     asyncPushOnce,
     asyncSliceOnce,
@@ -300,6 +301,26 @@ test("asyncEqualOnce", async t => {
     );
     t.false(
         await asyncEqualOnce(
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])]),
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])])
+        )
+    );
+});
+
+test("asyncNotEqualOnce", async t => {
+    t.false(await asyncNotEqualOnce(asyncIterator([1, 2, 3]), asyncIterator([1, 2, 3])));
+    t.true(await asyncNotEqualOnce(asyncIterator([1, 2, 3]), asyncIterator([1, 2, 3, 4])));
+    t.true(await asyncNotEqualOnce(asyncIterator([1, 2, 3, 4]), asyncIterator([1, 2, 3])));
+    t.true(await asyncNotEqualOnce(asyncIterator([1, 3, 3]), asyncIterator([1, 2, 3])));
+    t.false(
+        await asyncNotEqualOnce(
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])]),
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])]),
+            asyncEqualOnce
+        )
+    );
+    t.true(
+        await asyncNotEqualOnce(
             asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])]),
             asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])])
         )

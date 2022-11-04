@@ -448,3 +448,18 @@ export function asyncEqualOnceFn<T>(
 ): (a: AsyncIteratorLike<T>) => Promise<boolean> {
     return async a => asyncEqualOnce(a, b, elementsEqual);
 }
+
+export async function asyncNotEqualOnce<T>(
+    a: AsyncIteratorLike<T>,
+    b: AsyncIteratorLike<T>,
+    elementsEqual: (a: T, b: T) => boolean | Promise<boolean> = defaultEqual
+): Promise<boolean> {
+    return !(await asyncEqualOnce(a, b, elementsEqual));
+}
+
+export function asyncNotEqualOnceFn<T>(
+    b: AsyncIteratorLike<T>,
+    elementsEqual: (a: T, b: T) => boolean | Promise<boolean> = defaultEqual
+): (a: AsyncIteratorLike<T>) => Promise<boolean> {
+    return async a => !(await asyncEqualOnce(a, b, elementsEqual));
+}
