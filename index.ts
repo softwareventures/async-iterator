@@ -302,3 +302,44 @@ export function asyncDropOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncDropOnce(iterator, count);
 }
+
+export function asyncTakeWhileOnce<T, U extends T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => element is U
+): AsyncIterator<T>;
+export function asyncTakeWhileOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): AsyncIterator<T>;
+export function asyncTakeWhileOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const done: IteratorResult<T> = {done: true, value: undefined};
+    const during = async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        if (element.done !== true && (await predicate(element.value, i++))) {
+            return element;
+        } else {
+            next = after;
+            return done;
+        }
+    };
+    const after = async (): Promise<IteratorResult<T>> => done;
+    let next = during;
+    return {next: async () => next()};
+}
+
+export function asyncTakeWhileOnceFn<T, U extends T>(
+    predicate: (element: T, index: number) => element is U
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U>;
+export function asyncTakeWhileOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T>;
+export function asyncTakeWhileOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncTakeWhileOnce(iterator, predicate);
+}
