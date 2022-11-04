@@ -12,6 +12,7 @@ import {
     asyncNotEmptyOnce,
     asyncNotEqualOnce,
     asyncOnlyOnce,
+    asyncPrefixMatchOnce,
     asyncPushOnce,
     asyncSliceOnce,
     asyncTailOnce,
@@ -325,4 +326,12 @@ test("asyncNotEqualOnce", async t => {
             asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])])
         )
     );
+});
+
+test("asyncPrefixMatchOnce", async t => {
+    t.true(await asyncPrefixMatchOnce(asyncIterator([]), asyncIterator([])));
+    t.true(await asyncPrefixMatchOnce(asyncIterator([1, 2, 3]), asyncIterator([])));
+    t.true(await asyncPrefixMatchOnce(asyncIterator([1, 2, 3, 4]), asyncIterator([1, 2])));
+    t.false(await asyncPrefixMatchOnce(asyncIterator([1, 3, 4]), asyncIterator([1, 2])));
+    t.false(await asyncPrefixMatchOnce(asyncIterator([]), asyncIterator([1])));
 });

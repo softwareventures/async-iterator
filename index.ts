@@ -461,3 +461,21 @@ export function asyncNotEqualOnceFn<T>(
 ): (a: AsyncIteratorLike<T>) => Promise<boolean> {
     return async a => !(await asyncEqualOnce(a, b, elementsEqual));
 }
+
+export async function asyncPrefixMatchOnce<T>(
+    a: AsyncIteratorLike<T>,
+    b: AsyncIteratorLike<T>,
+    elementsEqual: (a: T, b: T) => boolean | Promise<boolean> = defaultEqual
+): Promise<boolean> {
+    const ait = asyncIterator(a);
+    const bit = asyncIterator(b);
+    let [aElement, bElement] = await Promise.all([ait.next(), bit.next()] as const);
+    while (
+        aElement.done !== true &&
+        bElement.done !== true &&
+        (await elementsEqual(aElement.value, bElement.value))
+    ) {
+        [aElement, bElement] = await Promise.all([ait.next(), bit.next()] as const);
+    }
+    return bElement.done === true;
+}
