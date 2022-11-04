@@ -429,15 +429,13 @@ export async function asyncEqualOnce<T>(
 ): Promise<boolean> {
     const ait = asyncIterator(a);
     const bit = asyncIterator(b);
-    let aElement = await ait.next();
-    let bElement = await bit.next();
+    let [aElement, bElement] = await Promise.all([ait.next(), bit.next()] as const);
     while (
         aElement.done !== true &&
         bElement.done !== true &&
         (await elementsEqual(aElement.value, bElement.value))
     ) {
-        aElement = await ait.next();
-        bElement = await bit.next();
+        [aElement, bElement] = await Promise.all([ait.next(), bit.next()] as const);
     }
     return aElement.done === true && bElement.done === true;
 }
