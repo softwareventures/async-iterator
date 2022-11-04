@@ -13,6 +13,7 @@ import {
     asyncFilterOnce,
     asyncFold1Once,
     asyncFoldOnce,
+    asyncIndexOfOnce,
     asyncIndexOnce,
     asyncInitialOnce,
     asyncIterator,
@@ -426,4 +427,9 @@ test("asyncIndexOnce", async t => {
 test("asyncContainsOnce", async t => {
     t.true(await asyncContainsOnce(asyncIterator([1, 2, 3]), 1));
     t.false(await asyncContainsOnce(asyncIterator([1, 2, 3]), 0));
+});
+
+test("asyncIndexOfOnce", async t => {
+    t.is(await asyncIndexOfOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 3), 2);
+    t.is(await asyncIndexOfOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 5), null);
 });
