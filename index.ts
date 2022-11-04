@@ -648,3 +648,27 @@ export function asyncFoldOnceFn<T, U>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<U> {
     return async iterator => asyncFoldOnce(iterator, f, initial);
 }
+
+export async function asyncFold1Once<T>(
+    iterator: AsyncIteratorLike<T>,
+    f: (accumulator: T, element: T, index: number) => T | Promise<T>
+): Promise<T> {
+    const it = asyncIterator(iterator);
+    const element = await it.next();
+
+    if (element.done === true) {
+        throw new TypeError("asyncFold1Once: empty AsyncIterator");
+    }
+
+    return asyncFoldOnce(
+        it,
+        async (accumulator, element, index) => f(accumulator, element, index + 1),
+        element.value
+    );
+}
+
+export function asyncFold1OnceFn<T>(
+    f: (accumulator: T, element: T, index: number) => T | Promise<T>
+): (iterator: AsyncIteratorLike<T>) => Promise<T> {
+    return async iterator => asyncFold1Once(iterator, f);
+}
