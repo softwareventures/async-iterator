@@ -573,3 +573,28 @@ export function asyncExcludeNullOnce<T>(
 ): AsyncIterator<T> {
     return asyncFilterOnce(iterator, isNotNull);
 }
+
+export function asyncExcludeFirstOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const before = async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        if (element.done !== true && !(await predicate(element.value, i++))) {
+            return element;
+        }
+        next = after;
+        return it.next();
+    };
+    const after = async (): Promise<IteratorResult<T>> => it.next();
+    let next = before;
+    return {next: async () => next()};
+}
+
+export function asyncExcludeFirstOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncExcludeFirstOnce(iterator, predicate);
+}
