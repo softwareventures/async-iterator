@@ -611,3 +611,16 @@ export function asyncRemoveOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncRemoveOnce(iterator, value);
 }
+
+export function asyncRemoveFirstOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    value: T | Promise<T>
+): AsyncIterator<T> {
+    return asyncExcludeFirstOnce(iterator, async element => element === (await value));
+}
+
+export function asyncRemoveFirstOnceFn<T>(
+    value: T | Promise<T>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncRemoveFirstOnce(iterator, value);
+}

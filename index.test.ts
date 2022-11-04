@@ -19,6 +19,7 @@ import {
     asyncOnlyOnce,
     asyncPrefixMatchOnce,
     asyncPushOnce,
+    asyncRemoveFirstOnce,
     asyncRemoveOnce,
     asyncSliceOnce,
     asyncTailOnce,
@@ -395,5 +396,12 @@ test("asyncRemoveOnce", async t => {
     t.deepEqual(
         await asyncToArrayOnce(asyncRemoveOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 3)),
         [1, 2, 4, 2, 1]
+    );
+});
+
+test("asyncRemoveFirstOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(asyncRemoveFirstOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 3)),
+        [1, 2, 4, 3, 2, 1]
     );
 });
