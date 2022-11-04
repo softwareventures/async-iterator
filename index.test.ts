@@ -2,6 +2,7 @@ import type {ExecutionContext} from "ava";
 import test from "ava";
 import {
     asyncDropOnce,
+    asyncDropWhileOnce,
     asyncEmptyOnce,
     asyncInitialOnce,
     asyncIterator,
@@ -231,5 +232,27 @@ test("asyncTakeUntilOnce", async t => {
             asyncTakeUntilOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), e => e >= 4)
         ),
         [1, 2, 3]
+    );
+});
+
+test("asyncDropWhileOnce", async t => {
+    t.deepEqual(await asyncToArrayOnce(asyncDropWhileOnce(asyncIterator([]), (_, i) => i < 3)), []);
+    t.deepEqual(
+        await asyncToArrayOnce(asyncDropWhileOnce(asyncIterator([1, 2]), (_, i) => i < 3)),
+        []
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(asyncDropWhileOnce(asyncIterator([1, 2, 3, 4, 5]), (_, i) => i < 3)),
+        [4, 5]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(asyncDropWhileOnce(asyncIterator([1, 2, 3, 4, 5]), () => false)),
+        [1, 2, 3, 4, 5]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncDropWhileOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), e => e < 4)
+        ),
+        [4, 3, 2, 1]
     );
 });
