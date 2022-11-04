@@ -506,3 +506,40 @@ export function asyncMapOnceFn<T, U>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U> {
     return iterator => asyncMapOnce(iterator, f);
 }
+
+export function asyncFilterOnce<T, U extends T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => element is U
+): AsyncIterator<U>;
+export function asyncFilterOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): AsyncIterator<T>;
+export function asyncFilterOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    return {
+        next: async () => {
+            let element = await it.next();
+            while (element.done !== true && !(await predicate(element.value, i++))) {
+                element = await it.next();
+            }
+            return element;
+        }
+    };
+}
+
+export function asyncFilterOnceFn<T, U extends T>(
+    predicate: (element: T, index: number) => element is U
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U>;
+export function asyncFilterOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T>;
+export function asyncFilterOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncFilterOnce(iterator, predicate);
+}
