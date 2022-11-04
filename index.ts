@@ -479,3 +479,30 @@ export async function asyncPrefixMatchOnce<T>(
     }
     return bElement.done === true;
 }
+
+export function asyncMapOnce<T, U>(
+    iterator: AsyncIteratorLike<T>,
+    f: (element: T, index: number) => U
+): AsyncIterator<U> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const done: IteratorResult<U> = {done: true, value: undefined};
+    const during = async (): Promise<IteratorResult<U>> => {
+        const element = await it.next();
+        if (element.done === true) {
+            next = after;
+            return done;
+        } else {
+            return {value: f(element.value, i++)};
+        }
+    };
+    const after = async (): Promise<IteratorResult<U>> => done;
+    let next = during;
+    return {next: async () => next()};
+}
+
+export function asyncMapOnceFn<T, U>(
+    f: (element: T, index: number) => U
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U> {
+    return iterator => asyncMapOnce(iterator, f);
+}

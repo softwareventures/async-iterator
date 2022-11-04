@@ -9,6 +9,7 @@ import {
     asyncInitialOnce,
     asyncIterator,
     asyncLastOnce,
+    asyncMapOnce,
     asyncNotEmptyOnce,
     asyncNotEqualOnce,
     asyncOnlyOnce,
@@ -334,4 +335,17 @@ test("asyncPrefixMatchOnce", async t => {
     t.true(await asyncPrefixMatchOnce(asyncIterator([1, 2, 3, 4]), asyncIterator([1, 2])));
     t.false(await asyncPrefixMatchOnce(asyncIterator([1, 3, 4]), asyncIterator([1, 2])));
     t.false(await asyncPrefixMatchOnce(asyncIterator([]), asyncIterator([1])));
+});
+
+test("asyncMapOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(asyncMapOnce(asyncIterator([1, 2, 3]), e => e + 1)),
+        [2, 3, 4]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncMapOnce(asyncIterator([1, 2, 3]), (e, i) => (i === 1 ? e * 10 : e))
+        ),
+        [1, 20, 3]
+    );
 });
