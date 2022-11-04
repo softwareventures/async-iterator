@@ -1,6 +1,7 @@
 import type {ExecutionContext} from "ava";
 import test from "ava";
 import {
+    asyncContainsOnce,
     asyncDropOnce,
     asyncDropUntilOnce,
     asyncDropWhileOnce,
@@ -420,4 +421,9 @@ test("asyncFold1Once", async t => {
 test("asyncIndexOnce", async t => {
     t.is(await asyncIndexOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 2), 3);
     t.is(await asyncIndexOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), 7), null);
+});
+
+test("asyncContainsOnce", async t => {
+    t.true(await asyncContainsOnce(asyncIterator([1, 2, 3]), 1));
+    t.false(await asyncContainsOnce(asyncIterator([1, 2, 3]), 0));
 });

@@ -701,3 +701,25 @@ export function asyncIndexOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
     return async iterator => asyncIndexOnce(iterator, index);
 }
+
+export async function asyncContainsOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    value: T | Promise<T>
+): Promise<boolean> {
+    const it = asyncIterator(iterator);
+    const [v, e] = await Promise.all([value, it.next()] as const);
+    let element = e;
+    while (element.done !== true) {
+        if (element.value === v) {
+            return true;
+        }
+        element = await it.next();
+    }
+    return false;
+}
+
+export function asyncContainsOnceFn<T>(
+    value: T | Promise<T>
+): (iterator: AsyncIteratorLike<T>) => Promise<boolean> {
+    return async iterator => asyncContainsOnce(iterator, value);
+}
