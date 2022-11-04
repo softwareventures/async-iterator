@@ -5,6 +5,7 @@ import {
     asyncDropUntilOnce,
     asyncDropWhileOnce,
     asyncEmptyOnce,
+    asyncEqualOnce,
     asyncInitialOnce,
     asyncIterator,
     asyncLastOnce,
@@ -282,5 +283,25 @@ test("asyncDropUntilOnce", async t => {
             asyncDropUntilOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), e => e >= 4)
         ),
         [4, 3, 2, 1]
+    );
+});
+
+test("asyncEqualOnce", async t => {
+    t.true(await asyncEqualOnce(asyncIterator([1, 2, 3]), asyncIterator([1, 2, 3])));
+    t.false(await asyncEqualOnce(asyncIterator([1, 2, 3]), asyncIterator([1, 2, 3, 4])));
+    t.false(await asyncEqualOnce(asyncIterator([1, 2, 3, 4]), asyncIterator([1, 2, 3])));
+    t.false(await asyncEqualOnce(asyncIterator([1, 3, 3]), asyncIterator([1, 2, 3])));
+    t.true(
+        await asyncEqualOnce(
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])]),
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])]),
+            asyncEqualOnce
+        )
+    );
+    t.false(
+        await asyncEqualOnce(
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])]),
+            asyncIterator([asyncIterator([1, 2]), asyncIterator([3, 4])])
+        )
     );
 });

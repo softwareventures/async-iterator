@@ -1,3 +1,4 @@
+import {equal as defaultEqual} from "@softwareventures/ordered";
 import type {AsyncIterableLike} from "@softwareventures/async-iterable";
 import {hasProperty} from "unknown";
 import {asyncIterable} from "@softwareventures/async-iterable";
@@ -419,4 +420,31 @@ export function asyncDropUntilOnceFn<T>(
     predicate: (element: T, index: number) => boolean | Promise<boolean>
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncDropUntilOnce(iterator, predicate);
+}
+
+export async function asyncEqualOnce<T>(
+    a: AsyncIteratorLike<T>,
+    b: AsyncIteratorLike<T>,
+    elementsEqual: (a: T, b: T) => boolean | Promise<boolean> = defaultEqual
+): Promise<boolean> {
+    const ait = asyncIterator(a);
+    const bit = asyncIterator(b);
+    let aElement = await ait.next();
+    let bElement = await bit.next();
+    while (
+        aElement.done !== true &&
+        bElement.done !== true &&
+        (await elementsEqual(aElement.value, bElement.value))
+    ) {
+        aElement = await ait.next();
+        bElement = await bit.next();
+    }
+    return aElement.done === true && bElement.done === true;
+}
+
+export function asyncEqualOnceFn<T>(
+    b: AsyncIteratorLike<T>,
+    elementsEqual: (a: T, b: T) => boolean | Promise<boolean> = defaultEqual
+): (a: AsyncIteratorLike<T>) => Promise<boolean> {
+    return async a => asyncEqualOnce(a, b, elementsEqual);
 }
