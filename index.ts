@@ -543,3 +543,26 @@ export function asyncFilterOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncFilterOnce(iterator, predicate);
 }
+
+export function asyncExcludeOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    return {
+        next: async () => {
+            let element = await it.next();
+            while (element.done !== true && (await predicate(element.value, i++))) {
+                element = await it.next();
+            }
+            return element;
+        }
+    };
+}
+
+export function asyncExcludeOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncExcludeOnce(iterator, predicate);
+}
