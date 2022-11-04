@@ -12,6 +12,7 @@ import {
     asyncSliceOnce,
     asyncTailOnce,
     asyncTakeOnce,
+    asyncTakeUntilOnce,
     asyncTakeWhileOnce,
     asyncToArrayOnce,
     asyncUnshiftOnce
@@ -201,6 +202,33 @@ test("asyncTakeWhileOnce", async t => {
     t.deepEqual(
         await asyncToArrayOnce(
             asyncTakeWhileOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), e => e < 4)
+        ),
+        [1, 2, 3]
+    );
+});
+
+test("asyncTakeUntilOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(asyncTakeUntilOnce(asyncIterator([]), (_, i) => i >= 3)),
+        []
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(asyncTakeUntilOnce(asyncIterator([1, 2]), (_, i) => i >= 3)),
+        [1, 2]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncTakeUntilOnce(asyncIterator([1, 2, 3, 4, 5]), (_, i) => i >= 3)
+        ),
+        [1, 2, 3]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(asyncTakeUntilOnce(asyncIterator([1, 2, 3, 4, 5]), () => true)),
+        []
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncTakeUntilOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), e => e >= 4)
         ),
         [1, 2, 3]
     );

@@ -343,3 +343,30 @@ export function asyncTakeWhileOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncTakeWhileOnce(iterator, predicate);
 }
+
+export function asyncTakeUntilOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const done: IteratorResult<T> = {done: true, value: undefined};
+    const during = async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        if (element.done !== true && !(await predicate(element.value, i++))) {
+            return element;
+        } else {
+            next = after;
+            return done;
+        }
+    };
+    const after = async (): Promise<IteratorResult<T>> => done;
+    let next = during;
+    return {next: async () => next()};
+}
+
+export function asyncTakeUntilOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncTakeUntilOnce(iterator, predicate);
+}
