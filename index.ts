@@ -766,3 +766,38 @@ export function asyncFindIndexOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<number | null> {
     return async iterator => asyncFindIndexOnce(iterator, predicate);
 }
+
+export async function asyncFindOnce<T, U extends T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => element is U
+): Promise<U | null>;
+export async function asyncFindOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): Promise<T | null>;
+export async function asyncFindOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    let element = await it.next();
+    for (let i = 0; element.done !== true; ++i) {
+        if (await predicate(element.value, i)) {
+            return element.value;
+        }
+        element = await it.next();
+    }
+    return null;
+}
+
+export function asyncFindOnceFn<T, U extends T>(
+    predicate: (element: T, index: number) => element is U
+): (iterator: AsyncIteratorLike<T>) => Promise<U | null>;
+export function asyncFindOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => Promise<T | null>;
+export function asyncFindOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
+    return async iterator => asyncFindOnce(iterator, predicate);
+}
