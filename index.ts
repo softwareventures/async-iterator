@@ -962,3 +962,16 @@ export async function asyncAndOnce(iterator: AsyncIteratorLike<boolean>): Promis
 export async function asyncOrOnce(iterator: AsyncIteratorLike<boolean>): Promise<boolean> {
     return (await asyncFindIndexOnce(iterator, element => element)) != null;
 }
+
+export async function asyncAnyOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): Promise<boolean> {
+    return (await asyncFindIndexOnce(iterator, predicate)) != null;
+}
+
+export function asyncAnyOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => Promise<boolean> {
+    return async iterator => asyncAnyOnce(iterator, predicate);
+}
