@@ -903,3 +903,35 @@ export function asyncMinimumOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
     return async iterator => internalAsyncMaximumOnce(iterator, reverse(compare));
 }
+
+export async function asyncMinimumByOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    select: (element: T, index: number) => number | Promise<number>
+): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    let element = await it.next();
+
+    if (element.done === true) {
+        return null;
+    }
+
+    let min = element.value;
+    let minBy: number;
+    [minBy, element] = await Promise.all([select(element.value, 0), it.next()] as const);
+    for (let i = 1; element.done !== true; ++i) {
+        const [by, next] = await Promise.all([select(element.value, i), it.next()] as const);
+        if (by < minBy) {
+            min = element.value;
+            minBy = by;
+        }
+        element = next;
+    }
+
+    return min;
+}
+
+export function asyncMinimumByOnceFn<T>(
+    select: (element: T, index: number) => number | Promise<number>
+): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
+    return async iterator => asyncMinimumByOnce(iterator, select);
+}

@@ -23,6 +23,7 @@ import {
     asyncMapOnce,
     asyncMaximumByOnce,
     asyncMaximumOnce,
+    asyncMinimumByOnce,
     asyncMinimumOnce,
     asyncNotEmptyOnce,
     asyncNotEqualOnce,
@@ -463,4 +464,10 @@ test("asyncMinimumOnce", async t => {
     t.is(await asyncMinimumOnce(asyncIterator([1, 2, 3])), 1);
     t.is(await asyncMinimumOnce(asyncIterator([2, 3, 4, 1, 2, 3])), 1);
     t.is(await asyncMinimumOnce(asyncIterator([])), null);
+});
+
+test("asyncMinimumByOnce", async t => {
+    t.is(await asyncMinimumByOnce(asyncIterator(["1", "2", "3"]), Number), "1");
+    t.is(await asyncMinimumByOnce(asyncIterator(["2", "3", "4", "1", "2", "3"]), Number), "1");
+    t.is(await asyncMinimumByOnce(asyncIterator([]), Number), null);
 });
