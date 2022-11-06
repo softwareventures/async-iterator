@@ -30,6 +30,7 @@ import {
     asyncNotEmptyOnce,
     asyncNotEqualOnce,
     asyncOnlyOnce,
+    asyncOrOnce,
     asyncPrefixMatchOnce,
     asyncPushOnce,
     asyncRemoveFirstOnce,
@@ -490,4 +491,10 @@ test("asyncAndOnce", async t => {
     t.true(await asyncAndOnce(asyncIterator([true, true, true])));
     t.false(await asyncAndOnce(asyncIterator([true, false, true])));
     t.true(await asyncAndOnce(asyncIterator([])));
+});
+
+test("asyncOrOnce", async t => {
+    t.true(await asyncOrOnce(asyncIterator([true, false, true])));
+    t.false(await asyncOrOnce(asyncIterator([false, false, false])));
+    t.false(await asyncOrOnce(asyncIterator([])));
 });
