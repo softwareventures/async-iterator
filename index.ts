@@ -1,4 +1,5 @@
-import {equal as defaultEqual} from "@softwareventures/ordered";
+import type {Comparator} from "@softwareventures/ordered";
+import {compare as defaultCompare, equal as defaultEqual} from "@softwareventures/ordered";
 import type {AsyncIterableLike} from "@softwareventures/async-iterable";
 import {asyncIterable} from "@softwareventures/async-iterable";
 import {hasProperty} from "unknown";
@@ -800,4 +801,50 @@ export function asyncFindOnceFn<T>(
     predicate: (element: T, index: number) => boolean | Promise<boolean>
 ): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
     return async iterator => asyncFindOnce(iterator, predicate);
+}
+
+export async function asyncMaximumOnce<T extends string | number | boolean>(
+    iterator: AsyncIteratorLike<T>
+): Promise<T | null>;
+export async function asyncMaximumOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    compare: Comparator<T>
+): Promise<T | null>;
+export async function asyncMaximumOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    compare?: Comparator<T>
+): Promise<T | null> {
+    return internalAsyncMaximumOnce(
+        iterator,
+        compare ?? (defaultCompare as unknown as Comparator<T>)
+    );
+}
+
+export function asyncMaximumOnceFn<T>(
+    compare: Comparator<T>
+): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
+    return async iterator => internalAsyncMaximumOnce(iterator, compare);
+}
+
+async function internalAsyncMaximumOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    compare: Comparator<T>
+): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    let element = await it.next();
+
+    if (element.done === true) {
+        return null;
+    }
+
+    let max = element.value;
+    element = await it.next();
+    while (element.done !== true) {
+        if (compare(element.value, max) > 0) {
+            max = element.value;
+        }
+        element = await it.next();
+    }
+
+    return max;
 }

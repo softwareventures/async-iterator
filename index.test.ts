@@ -21,6 +21,7 @@ import {
     asyncIterator,
     asyncLastOnce,
     asyncMapOnce,
+    asyncMaximumOnce,
     asyncNotEmptyOnce,
     asyncNotEqualOnce,
     asyncOnlyOnce,
@@ -442,4 +443,10 @@ test("asyncFindIndexOnce", async t => {
 
 test("asyncFindOnce", async t => {
     t.is(await asyncFindOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1]), n => n >= 3), 3);
+});
+
+test("asyncMaximumOnce", async t => {
+    t.is(await asyncMaximumOnce(asyncIterator([1, 2, 3])), 3);
+    t.is(await asyncMaximumOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1])), 4);
+    t.is(await asyncMaximumOnce(asyncIterator([])), null);
 });
