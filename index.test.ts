@@ -1,6 +1,7 @@
 import type {ExecutionContext} from "ava";
 import test from "ava";
 import {
+    asyncAllOnce,
     asyncAndOnce,
     asyncAnyOnce,
     asyncAverageOnce,
@@ -503,4 +504,9 @@ test("asyncOrOnce", async t => {
 test("asyncAnyOnce", async t => {
     t.true(await asyncAnyOnce(asyncIterator([1, 2, 3]), e => e > 2));
     t.false(await asyncAnyOnce(asyncIterator([1, 2, 3]), e => e > 4));
+});
+
+test("asyncAllOnce", async t => {
+    t.true(await asyncAllOnce(asyncIterator([1, 2, 3]), e => e < 4));
+    t.false(await asyncAllOnce(asyncIterator([1, 2, 3]), e => e > 2));
 });

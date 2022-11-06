@@ -975,3 +975,21 @@ export function asyncAnyOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<boolean> {
     return async iterator => asyncAnyOnce(iterator, predicate);
 }
+
+export async function asyncAllOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): Promise<boolean> {
+    return (
+        (await asyncFindIndexOnce(
+            iterator,
+            async (element, index) => !(await predicate(element, index))
+        )) == null
+    );
+}
+
+export function asyncAllOnceFn<T>(
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): (iterator: AsyncIteratorLike<T>) => Promise<boolean> {
+    return async iterator => asyncAllOnce(iterator, predicate);
+}
