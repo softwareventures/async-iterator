@@ -33,6 +33,7 @@ import {
     asyncRemoveFirstOnce,
     asyncRemoveOnce,
     asyncSliceOnce,
+    asyncSumOnce,
     asyncTailOnce,
     asyncTakeOnce,
     asyncTakeUntilOnce,
@@ -470,4 +471,9 @@ test("asyncMinimumByOnce", async t => {
     t.is(await asyncMinimumByOnce(asyncIterator(["1", "2", "3"]), Number), "1");
     t.is(await asyncMinimumByOnce(asyncIterator(["2", "3", "4", "1", "2", "3"]), Number), "1");
     t.is(await asyncMinimumByOnce(asyncIterator([]), Number), null);
+});
+
+test("asyncSumOnce", async t => {
+    t.is(await asyncSumOnce(asyncIterator([1, 2, 3])), 6);
+    t.is(await asyncSumOnce(asyncIterator([])), 0);
 });

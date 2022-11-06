@@ -935,3 +935,7 @@ export function asyncMinimumByOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
     return async iterator => asyncMinimumByOnce(iterator, select);
 }
+
+export async function asyncSumOnce(iterator: AsyncIteratorLike<number>): Promise<number> {
+    return asyncFoldOnce(iterator, (a, e) => a + e, 0);
+}
