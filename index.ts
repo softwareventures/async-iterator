@@ -954,3 +954,7 @@ export async function asyncAverageOnce(
     );
     return count === 0 ? null : sum / count;
 }
+
+export async function asyncAndOnce(iterator: AsyncIteratorLike<boolean>): Promise<boolean> {
+    return (await asyncFindIndexOnce(iterator, element => !element)) == null;
+}
