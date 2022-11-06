@@ -993,3 +993,39 @@ export function asyncAllOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<boolean> {
     return async iterator => asyncAllOnce(iterator, predicate);
 }
+
+export function asyncConcatOnce<T>(
+    iterators: AsyncIteratorLike<AsyncIteratorLike<T>>
+): AsyncIterator<T> {
+    const its = asyncIterator(iterators);
+    const done: IteratorResult<T> = {done: true, value: undefined};
+    const first = async (): Promise<IteratorResult<T>> => {
+        const itElement = await its.next();
+        if (itElement.done === true) {
+            next = after;
+            return done;
+        } else {
+            next = during(asyncIterator(itElement.value));
+            return next();
+        }
+    };
+    const during = (iterator: AsyncIterator<T>) => async (): Promise<IteratorResult<T>> => {
+        let element = await iterator.next();
+        while (element.done === true) {
+            const itElement = await its.next();
+            if (itElement.done === true) {
+                next = after;
+                return done;
+            } else {
+                const iterator = asyncIterator(itElement.value);
+                next = during(iterator);
+                element = await iterator.next();
+            }
+        }
+
+        return element;
+    };
+    const after = async (): Promise<IteratorResult<T>> => done;
+    let next = first;
+    return {next: async () => next()};
+}

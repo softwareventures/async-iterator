@@ -5,6 +5,7 @@ import {
     asyncAndOnce,
     asyncAnyOnce,
     asyncAverageOnce,
+    asyncConcatOnce,
     asyncContainsOnce,
     asyncDropOnce,
     asyncDropUntilOnce,
@@ -509,4 +510,26 @@ test("asyncAnyOnce", async t => {
 test("asyncAllOnce", async t => {
     t.true(await asyncAllOnce(asyncIterator([1, 2, 3]), e => e < 4));
     t.false(await asyncAllOnce(asyncIterator([1, 2, 3]), e => e > 2));
+});
+
+test("asyncConcatOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncConcatOnce(
+                asyncIterator([
+                    asyncIterator([1, 2]),
+                    asyncIterator([]),
+                    asyncIterator([3]),
+                    asyncIterator([4, 5])
+                ])
+            )
+        ),
+        [1, 2, 3, 4, 5]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncConcatOnce(asyncIterator([asyncIterator([]), asyncIterator([])]))
+        ),
+        []
+    );
 });
