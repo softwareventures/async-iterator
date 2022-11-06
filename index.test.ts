@@ -1,6 +1,7 @@
 import type {ExecutionContext} from "ava";
 import test from "ava";
 import {
+    asyncAverageOnce,
     asyncContainsOnce,
     asyncDropOnce,
     asyncDropUntilOnce,
@@ -476,4 +477,10 @@ test("asyncMinimumByOnce", async t => {
 test("asyncSumOnce", async t => {
     t.is(await asyncSumOnce(asyncIterator([1, 2, 3])), 6);
     t.is(await asyncSumOnce(asyncIterator([])), 0);
+});
+
+test("asyncAverageOnce", async t => {
+    t.is(await asyncAverageOnce(asyncIterator([1, 2, 3])), 2);
+    t.is(await asyncAverageOnce(asyncIterator([1, 2, 3, 2])), 2);
+    t.is(await asyncAverageOnce(asyncIterator([])), null);
 });

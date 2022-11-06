@@ -943,3 +943,14 @@ export async function asyncSumOnce(iterator: AsyncIteratorLike<number>): Promise
 export async function asyncProductOnce(iterator: AsyncIteratorLike<number>): Promise<number> {
     return asyncFoldOnce(iterator, (a, e) => a * e, 1);
 }
+
+export async function asyncAverageOnce(
+    iterator: AsyncIteratorLike<number>
+): Promise<number | null> {
+    const [sum, count] = await asyncFoldOnce(
+        iterator,
+        ([sum], element, index) => [sum + element, index + 1],
+        [0, 0]
+    );
+    return count === 0 ? null : sum / count;
+}
