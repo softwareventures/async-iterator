@@ -745,3 +745,24 @@ export function asyncIndexOfOnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => Promise<number | null> {
     return async iterator => asyncIndexOfOnce(iterator, value);
 }
+
+export async function asyncFindIndexOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    predicate: (element: T, index: number) => boolean | Promise<boolean>
+): Promise<number | null> {
+    const it = asyncIterator(iterator);
+    let element = await it.next();
+    for (let i = 0; element.done !== true; ++i) {
+        if (await predicate(element.value, i)) {
+            return i;
+        }
+        element = await it.next();
+    }
+    return null;
+}
+
+export function asyncFindIndexOnceFn<T>(
+    predicate: (element: T, index: number) => boolean
+): (iterator: AsyncIteratorLike<T>) => Promise<number | null> {
+    return async iterator => asyncFindIndexOnce(iterator, predicate);
+}
