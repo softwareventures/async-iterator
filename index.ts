@@ -1,5 +1,5 @@
 import type {Comparator} from "@softwareventures/ordered";
-import {compare as defaultCompare, equal as defaultEqual} from "@softwareventures/ordered";
+import {compare as defaultCompare, equal as defaultEqual, reverse} from "@softwareventures/ordered";
 import type {AsyncIterableLike} from "@softwareventures/async-iterable";
 import {asyncIterable} from "@softwareventures/async-iterable";
 import {hasProperty} from "unknown";
@@ -879,4 +879,27 @@ export function asyncMaximumByOnceFn<T>(
     select: (element: T, index: number) => number | Promise<number>
 ): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
     return async iterator => asyncMaximumByOnce(iterator, select);
+}
+
+export async function asyncMinimumOnce<T extends string | number | boolean>(
+    iterator: AsyncIteratorLike<T>
+): Promise<T | null>;
+export async function asyncMinimumOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    compare: Comparator<T>
+): Promise<T | null>;
+export async function asyncMinimumOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    compare?: Comparator<T>
+): Promise<T | null> {
+    return internalAsyncMaximumOnce(
+        iterator,
+        reverse(compare ?? (defaultCompare as unknown as Comparator<T>))
+    );
+}
+
+export function asyncMinimumOnceFn<T>(
+    compare: Comparator<T>
+): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
+    return async iterator => internalAsyncMaximumOnce(iterator, reverse(compare));
 }
