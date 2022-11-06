@@ -21,6 +21,7 @@ import {
     asyncIterator,
     asyncLastOnce,
     asyncMapOnce,
+    asyncMaximumByOnce,
     asyncMaximumOnce,
     asyncNotEmptyOnce,
     asyncNotEqualOnce,
@@ -449,4 +450,10 @@ test("asyncMaximumOnce", async t => {
     t.is(await asyncMaximumOnce(asyncIterator([1, 2, 3])), 3);
     t.is(await asyncMaximumOnce(asyncIterator([1, 2, 3, 4, 3, 2, 1])), 4);
     t.is(await asyncMaximumOnce(asyncIterator([])), null);
+});
+
+test("asyncMaximumByOnce", async t => {
+    t.is(await asyncMaximumByOnce(asyncIterator(["1", "2", "3"]), Number), "3");
+    t.is(await asyncMaximumByOnce(asyncIterator(["1", "2", "3", "4", "3", "2", "1"]), Number), "4");
+    t.is(await asyncMaximumByOnce(asyncIterator([]), Number), null);
 });

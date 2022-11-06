@@ -848,3 +848,35 @@ async function internalAsyncMaximumOnce<T>(
 
     return max;
 }
+
+export async function asyncMaximumByOnce<T>(
+    iterator: AsyncIteratorLike<T>,
+    select: (element: T, index: number) => number | Promise<number>
+): Promise<T | null> {
+    const it = asyncIterator(iterator);
+    let element = await it.next();
+
+    if (element.done === true) {
+        return null;
+    }
+
+    let max = element.value;
+    let maxBy: number;
+    [maxBy, element] = await Promise.all([select(element.value, 0), it.next()] as const);
+    for (let i = 1; element.done !== true; ++i) {
+        const [by, next] = await Promise.all([select(element.value, i), it.next()] as const);
+        if (by > maxBy) {
+            max = element.value;
+            maxBy = by;
+        }
+        element = next;
+    }
+
+    return max;
+}
+
+export function asyncMaximumByOnceFn<T>(
+    select: (element: T, index: number) => number | Promise<number>
+): (iterator: AsyncIteratorLike<T>) => Promise<T | null> {
+    return async iterator => asyncMaximumByOnce(iterator, select);
+}
