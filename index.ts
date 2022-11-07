@@ -1041,3 +1041,16 @@ export function asyncAppendOnce<T>(
 ): (a: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return a => asyncConcatOnce([a, b]);
 }
+
+export function asyncConcatMapOnce<T, U>(
+    iterator: AsyncIteratorLike<T>,
+    f: (element: T, index: number) => AsyncIteratorLike<U>
+): AsyncIterator<U> {
+    return asyncConcatOnce(asyncMapOnce(iterator, f));
+}
+
+export function asyncConcatMapOnceFn<T, U>(
+    f: (element: T, index: number) => AsyncIteratorLike<U>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U> {
+    return iterator => asyncConcatMapOnce(iterator, f);
+}

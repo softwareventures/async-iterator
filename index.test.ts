@@ -6,6 +6,7 @@ import {
     asyncAnyOnce,
     asyncAppendOnce,
     asyncAverageOnce,
+    asyncConcatMapOnce,
     asyncConcatOnce,
     asyncContainsOnce,
     asyncDropOnce,
@@ -569,5 +570,14 @@ test("asyncAppendOnce", async t => {
     t.deepEqual(
         await asyncToArrayOnce(asyncAppendOnce(asyncIterator([4, 5, 6]))(asyncIterator([]))),
         [4, 5, 6]
+    );
+});
+
+test("asyncConcatMapOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncConcatMapOnce(asyncIterator(["1,2,3", "4,5,6"]), s => s.split(","))
+        ),
+        ["1", "2", "3", "4", "5", "6"]
     );
 });
