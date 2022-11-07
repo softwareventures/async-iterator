@@ -1035,3 +1035,9 @@ export function asyncPrependOnce<T>(
 ): (b: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return b => asyncConcatOnce([a, b]);
 }
+
+export function asyncAppendOnce<T>(
+    b: AsyncIteratorLike<T>
+): (a: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return a => asyncConcatOnce([a, b]);
+}

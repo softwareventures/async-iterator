@@ -4,6 +4,7 @@ import {
     asyncAllOnce,
     asyncAndOnce,
     asyncAnyOnce,
+    asyncAppendOnce,
     asyncAverageOnce,
     asyncConcatOnce,
     asyncContainsOnce,
@@ -551,5 +552,22 @@ test("asyncPrependOnce", async t => {
     t.deepEqual(
         await asyncToArrayOnce(asyncPrependOnce(asyncIterator([1, 2, 3]))(asyncIterator([]))),
         [1, 2, 3]
+    );
+});
+
+test("asyncAppendOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(asyncAppendOnce(asyncIterator([4, 5, 6]))(asyncIterator([1, 2, 3]))),
+        [1, 2, 3, 4, 5, 6]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncAppendOnce(asyncIterator<number>([]))(asyncIterator([1, 2, 3]))
+        ),
+        [1, 2, 3]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(asyncAppendOnce(asyncIterator([4, 5, 6]))(asyncIterator([]))),
+        [4, 5, 6]
     );
 });
