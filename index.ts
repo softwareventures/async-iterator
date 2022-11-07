@@ -1054,3 +1054,20 @@ export function asyncConcatMapOnceFn<T, U>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U> {
     return iterator => asyncConcatMapOnce(iterator, f);
 }
+
+export async function asyncNoneNullOnce<T>(
+    iterator: AsyncIteratorLike<T | null | undefined>
+): Promise<T[] | null> {
+    const array: T[] = [];
+    const it = asyncIterator(iterator);
+    let element = await it.next();
+    while (element.done !== true) {
+        if (element.value == null) {
+            return null;
+        } else {
+            array.push(element.value);
+        }
+        element = await it.next();
+    }
+    return array;
+}

@@ -32,6 +32,7 @@ import {
     asyncMaximumOnce,
     asyncMinimumByOnce,
     asyncMinimumOnce,
+    asyncNoneNullOnce,
     asyncNotEmptyOnce,
     asyncNotEqualOnce,
     asyncOnlyOnce,
@@ -580,4 +581,11 @@ test("asyncConcatMapOnce", async t => {
         ),
         ["1", "2", "3", "4", "5", "6"]
     );
+});
+
+test("asyncNoneNullOnce", async t => {
+    t.deepEqual(await asyncNoneNullOnce(asyncIterator([1, 2, 3])), [1, 2, 3]);
+    t.is(await asyncNoneNullOnce(asyncIterator([1, null, 3])), null);
+    t.is(await asyncNoneNullOnce(asyncIterator([undefined, 2, 3])), null);
+    t.deepEqual(await asyncNoneNullOnce(asyncIterator([])), []);
 });
