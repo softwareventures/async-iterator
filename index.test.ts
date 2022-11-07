@@ -35,6 +35,7 @@ import {
     asyncOnlyOnce,
     asyncOrOnce,
     asyncPrefixMatchOnce,
+    asyncPrependOnce,
     asyncPushOnce,
     asyncRemoveFirstOnce,
     asyncRemoveOnce,
@@ -531,5 +532,24 @@ test("asyncConcatOnce", async t => {
             asyncConcatOnce(asyncIterator([asyncIterator([]), asyncIterator([])]))
         ),
         []
+    );
+});
+
+test("asyncPrependOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncPrependOnce(asyncIterator([1, 2, 3]))(asyncIterator([4, 5, 6]))
+        ),
+        [1, 2, 3, 4, 5, 6]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncPrependOnce(asyncIterator<number>([]))(asyncIterator([4, 5, 6]))
+        ),
+        [4, 5, 6]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(asyncPrependOnce(asyncIterator([1, 2, 3]))(asyncIterator([]))),
+        [1, 2, 3]
     );
 });
