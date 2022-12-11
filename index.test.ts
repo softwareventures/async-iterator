@@ -37,6 +37,7 @@ import {
     asyncNotEqualOnce,
     asyncOnlyOnce,
     asyncOrOnce,
+    asyncPairwiseOnce,
     asyncPrefixMatchOnce,
     asyncPrependOnce,
     asyncPushOnce,
@@ -610,4 +611,16 @@ test("asyncScan1Once", async t => {
         await asyncToArrayOnce(asyncScan1Once(asyncIterator([1, 2, 3]), (a, e, i) => a + e * i)),
         [1, 3, 9]
     );
+});
+
+test("asyncPairwiseOnce", async t => {
+    t.deepEqual(await asyncToArrayOnce(asyncPairwiseOnce(asyncIterator([]))), []);
+    t.deepEqual(await asyncToArrayOnce(asyncPairwiseOnce(asyncIterator([1]))), []);
+    t.deepEqual(await asyncToArrayOnce(asyncPairwiseOnce(asyncIterator([1, 2]))), [[1, 2]]);
+    t.deepEqual(await asyncToArrayOnce(asyncPairwiseOnce(asyncIterator([1, 2, 3, 4, 5]))), [
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [4, 5]
+    ]);
 });

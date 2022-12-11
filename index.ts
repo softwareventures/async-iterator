@@ -1139,3 +1139,35 @@ export function asyncScan1OnceFn<T>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
     return iterator => asyncScan1Once(iterator, f);
 }
+
+export function asyncPairwiseOnce<T>(
+    iterator: AsyncIteratorLike<T>
+): AsyncIterator<readonly [T, T]> {
+    const it = asyncIterator(iterator);
+    const before = async (): Promise<IteratorResult<readonly [T, T]>> => {
+        const element = await it.next();
+        if (element.done === true) {
+            next = after;
+            return after();
+        } else {
+            next = during(element.value);
+            return next();
+        }
+    };
+    const during = (previous: T) => async (): Promise<IteratorResult<readonly [T, T]>> => {
+        const element = await it.next();
+        if (element.done === true) {
+            next = after;
+            return after();
+        } else {
+            next = during(element.value);
+            return {value: [previous, element.value]};
+        }
+    };
+    const after = async (): Promise<IteratorResult<readonly [T, T]>> => ({
+        done: true,
+        value: undefined
+    });
+    let next = before;
+    return {next: async () => next()};
+}
