@@ -1171,3 +1171,32 @@ export function asyncPairwiseOnce<T>(
     let next = before;
     return {next: async () => next()};
 }
+
+export function asyncZipOnce<T, U>(
+    a: AsyncIteratorLike<T>,
+    b: AsyncIteratorLike<U>
+): AsyncIterator<readonly [T, U]> {
+    const ait = asyncIterator(a);
+    const bit = asyncIterator(b);
+    const during = async (): Promise<IteratorResult<readonly [T, U]>> => {
+        const [aElement, bElement] = await Promise.all([ait.next(), bit.next()] as const);
+        if (aElement.done === true || bElement.done === true) {
+            next = after;
+            return after();
+        } else {
+            return {value: [aElement.value, bElement.value]};
+        }
+    };
+    const after = async (): Promise<IteratorResult<readonly [T, U]>> => ({
+        done: true,
+        value: undefined
+    });
+    let next = during;
+    return {next: async () => next()};
+}
+
+export function asyncZipOnceFn<T, U>(
+    b: AsyncIteratorLike<U>
+): (a: AsyncIteratorLike<T>) => AsyncIterator<readonly [T, U]> {
+    return a => asyncZipOnce(a, b);
+}

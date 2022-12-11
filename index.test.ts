@@ -52,7 +52,8 @@ import {
     asyncTakeUntilOnce,
     asyncTakeWhileOnce,
     asyncToArrayOnce,
-    asyncUnshiftOnce
+    asyncUnshiftOnce,
+    asyncZipOnce
 } from "./index";
 
 test("asyncIterator(empty)", async t => {
@@ -623,4 +624,17 @@ test("asyncPairwiseOnce", async t => {
         [3, 4],
         [4, 5]
     ]);
+});
+
+test("asyncZipOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncZipOnce(asyncIterator([1, 2, 3]), asyncIterator([6, 5, 4, 3, 2, 1]))
+        ),
+        [
+            [1, 6],
+            [2, 5],
+            [3, 4]
+        ]
+    );
 });
