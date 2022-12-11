@@ -1101,3 +1101,41 @@ export function asyncScanOnceFn<T, U>(
 ): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U> {
     return iterator => asyncScanOnce(iterator, f, initial);
 }
+
+export function asyncScan1Once<T>(
+    iterator: AsyncIteratorLike<T>,
+    f: (accumulator: T, element: T, index: number) => T | Promise<T>
+): AsyncIterator<T> {
+    const it = asyncIterator(iterator);
+    let i = 1;
+    const first = async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        if (element.done === true) {
+            next = after;
+            return after();
+        } else {
+            next = during(element.value);
+            return {value: element.value};
+        }
+    };
+    const during = (accumulator: T) => async (): Promise<IteratorResult<T>> => {
+        const element = await it.next();
+        if (element.done === true) {
+            next = after;
+            return after();
+        } else {
+            const value = await f(accumulator, element.value, i++);
+            next = during(value);
+            return {value};
+        }
+    };
+    const after = async (): Promise<IteratorResult<T>> => ({done: true, value: undefined});
+    let next = first;
+    return {next: async () => next()};
+}
+
+export function asyncScan1OnceFn<T>(
+    f: (accumulator: T, element: T, index: number) => T | Promise<T>
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<T> {
+    return iterator => asyncScan1Once(iterator, f);
+}
