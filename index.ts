@@ -1071,3 +1071,33 @@ export async function asyncNoneNullOnce<T>(
     }
     return array;
 }
+
+export function asyncScanOnce<T, U>(
+    iterator: AsyncIteratorLike<T>,
+    f: (accumulator: U, element: T, index: number) => U | Promise<U>,
+    initial: U
+): AsyncIterator<U> {
+    const it = asyncIterator(iterator);
+    let i = 0;
+    const during = (accumulator: U) => async (): Promise<IteratorResult<U>> => {
+        const element = await it.next();
+        if (element.done === true) {
+            next = after;
+            return after();
+        } else {
+            const value = await f(accumulator, element.value, i++);
+            next = during(value);
+            return {value};
+        }
+    };
+    const after = async (): Promise<IteratorResult<U>> => ({done: true, value: undefined});
+    let next = during(initial);
+    return {next: async () => next()};
+}
+
+export function asyncScanOnceFn<T, U>(
+    f: (accumulator: U, element: T, index: number) => U | Promise<U>,
+    initial: U
+): (iterator: AsyncIteratorLike<T>) => AsyncIterator<U> {
+    return iterator => asyncScanOnce(iterator, f, initial);
+}

@@ -42,6 +42,7 @@ import {
     asyncPushOnce,
     asyncRemoveFirstOnce,
     asyncRemoveOnce,
+    asyncScanOnce,
     asyncSliceOnce,
     asyncSumOnce,
     asyncTailOnce,
@@ -588,4 +589,17 @@ test("asyncNoneNullOnce", async t => {
     t.is(await asyncNoneNullOnce(asyncIterator([1, null, 3])), null);
     t.is(await asyncNoneNullOnce(asyncIterator([undefined, 2, 3])), null);
     t.deepEqual(await asyncNoneNullOnce(asyncIterator([])), []);
+});
+
+test("asyncScanOnce", async t => {
+    t.deepEqual(
+        await asyncToArrayOnce(asyncScanOnce(asyncIterator([1, 2, 3]), (a, e, i) => a + e * i, 0)),
+        [0, 2, 8]
+    );
+    t.deepEqual(
+        await asyncToArrayOnce(
+            asyncScanOnce(asyncIterator(["a", "b", "c"]), (a, e, i) => `${a} ${i} ${e}`, "_")
+        ),
+        ["_ 0 a", "_ 0 a 1 b", "_ 0 a 1 b 2 c"]
+    );
 });
