@@ -1200,3 +1200,27 @@ export function asyncZipOnceFn<T, U>(
 ): (a: AsyncIteratorLike<T>) => AsyncIterator<readonly [T, U]> {
     return a => asyncZipOnce(a, b);
 }
+
+export async function asyncKeyByOnce<TKey, TElement>(
+    iterator: AsyncIteratorLike<TElement>,
+    f: (element: TElement, index: number) => TKey | Promise<TKey>
+): Promise<Map<TKey, readonly TElement[]>> {
+    const it = asyncIterator(iterator);
+    const map = new Map<TKey, TElement[]>();
+    for (
+        let i = 0, element = await it.next();
+        element.done !== true;
+        ++i, element = await it.next()
+    ) {
+        const key = await f(element.value, i);
+        const entries = map.get(key) ?? [];
+        map.set(key, [...entries, element.value]);
+    }
+    return map;
+}
+
+export function asyncKeyByOnceFn<TKey, TElement>(
+    f: (element: TElement, index: number) => TKey | Promise<TKey>
+): (iterator: AsyncIteratorLike<TElement>) => Promise<Map<TKey, readonly TElement[]>> {
+    return async iterator => asyncKeyByOnce(iterator, f);
+}
