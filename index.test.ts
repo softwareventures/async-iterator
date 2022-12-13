@@ -28,6 +28,7 @@ import {
     asyncIterator,
     asyncKeyByOnce,
     asyncKeyFirstByOnce,
+    asyncKeyLastByOnce,
     asyncLastOnce,
     asyncMapOnce,
     asyncMaximumByOnce,
@@ -658,5 +659,15 @@ test("asyncKeyFirstByOnce", async t => {
     t.deepEqual(Array.from(map.entries()), [
         ["odd", 1],
         ["even", 4]
+    ]);
+});
+
+test("asyncKeyLastByOnce", async t => {
+    const map = await asyncKeyLastByOnce(asyncIterator([1, 3, 4, 2, 5, 6]), e =>
+        e % 2 === 0 ? "even" : "odd"
+    );
+    t.deepEqual(Array.from(map.entries()), [
+        ["odd", 5],
+        ["even", 6]
     ]);
 });

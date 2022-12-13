@@ -1249,3 +1249,25 @@ export function asyncKeyFirstByOnceFn<TKey, TElement>(
 ): (iterator: AsyncIteratorLike<TElement>) => Promise<Map<TKey, TElement>> {
     return async iterator => asyncKeyFirstByOnce(iterator, f);
 }
+
+export async function asyncKeyLastByOnce<TKey, TElement>(
+    iterator: AsyncIteratorLike<TElement>,
+    f: (element: TElement, index: number) => TKey | Promise<TKey>
+): Promise<Map<TKey, TElement>> {
+    const it = asyncIterator(iterator);
+    const map = new Map<TKey, TElement>();
+    for (
+        let i = 0, element = await it.next();
+        element.done !== true;
+        ++i, element = await it.next()
+    ) {
+        map.set(await f(element.value, i), element.value);
+    }
+    return map;
+}
+
+export function asyncKeyLastByOnceFn<TKey, TElement>(
+    f: (element: TElement, index: number) => TKey | Promise<TKey>
+): (iterator: AsyncIteratorLike<TElement>) => Promise<Map<TKey, TElement>> {
+    return async iterator => asyncKeyLastByOnce(iterator, f);
+}
