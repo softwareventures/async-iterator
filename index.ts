@@ -1224,3 +1224,28 @@ export function asyncKeyByOnceFn<TKey, TElement>(
 ): (iterator: AsyncIteratorLike<TElement>) => Promise<Map<TKey, readonly TElement[]>> {
     return async iterator => asyncKeyByOnce(iterator, f);
 }
+
+export async function asyncKeyFirstByOnce<TKey, TElement>(
+    iterator: AsyncIteratorLike<TElement>,
+    f: (element: TElement, index: number) => TKey | Promise<TKey>
+): Promise<Map<TKey, TElement>> {
+    const it = asyncIterator(iterator);
+    const map = new Map<TKey, TElement>();
+    for (
+        let i = 0, element = await it.next();
+        element.done !== true;
+        ++i, element = await it.next()
+    ) {
+        const key = await f(element.value, i);
+        if (!map.has(key)) {
+            map.set(key, element.value);
+        }
+    }
+    return map;
+}
+
+export function asyncKeyFirstByOnceFn<TKey, TElement>(
+    f: (element: TElement, index: number) => TKey | Promise<TKey>
+): (iterator: AsyncIteratorLike<TElement>) => Promise<Map<TKey, TElement>> {
+    return async iterator => asyncKeyFirstByOnce(iterator, f);
+}
