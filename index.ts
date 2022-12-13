@@ -1332,3 +1332,32 @@ export function asyncMapKeyFirstByOnceFn<TKey, TElement, TNewElement>(
 ): (iterator: AsyncIteratorLike<TElement>) => Promise<Map<TKey, TNewElement>> {
     return async iterator => asyncMapKeyFirstByOnce(iterator, f);
 }
+
+export async function asyncMapKeyLastByOnce<TKey, TElement, TNewElement>(
+    iterator: AsyncIteratorLike<TElement>,
+    f: (
+        element: TElement,
+        index: number
+    ) => readonly [TKey, TNewElement] | Promise<readonly [TKey, TNewElement]>
+): Promise<Map<TKey, TNewElement>> {
+    const it = asyncIterator(iterator);
+    const map = new Map<TKey, TNewElement>();
+    for (
+        let i = 0, element = await it.next();
+        element.done !== true;
+        ++i, element = await it.next()
+    ) {
+        const [key, value] = await f(element.value, i);
+        map.set(key, value);
+    }
+    return map;
+}
+
+export function asyncMapKeyLastByOnceFn<TKey, TElement, TNewElement>(
+    f: (
+        element: TElement,
+        index: number
+    ) => readonly [TKey, TNewElement] | Promise<readonly [TKey, TNewElement]>
+): (iterator: AsyncIteratorLike<TElement>) => Promise<Map<TKey, TNewElement>> {
+    return async iterator => asyncMapKeyLastByOnce(iterator, f);
+}
